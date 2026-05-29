@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuminaStay • Hotel Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); }
+        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-12px) scale(1.03); box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-zinc-950 to-black text-white min-h-screen">
+
+<div class="max-w-7xl mx-auto p-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-10">
+        <div>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-sky-400 to-violet-400 bg-clip-text text-transparent">
+                LuminaStay
+            </h1>
+            <p class="text-zinc-400">Premium Hotel Management</p>
+        </div>
+        <button onclick="showAddModal()"
+                class="bg-gradient-to-r from-violet-600 to-sky-500 px-6 py-3 rounded-2xl font-medium flex items-center gap-2 hover:scale-105 transition">
+            <i class="fas fa-plus"></i> Add New Hotel
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="glass rounded-3xl p-6 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" id="search" placeholder="Search hotels..."
+               class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 focus:outline-none focus:border-sky-500">
+        <select class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+            <option>All Locations</option>
+        </select>
+        <input type="number" placeholder="Min Price" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+        <button class="bg-white text-black rounded-2xl font-semibold">Apply Filters</button>
+    </div>
+
+    <!-- Hotels Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="hotelGrid">
+        <!-- Populated by JS -->
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
+    <div class="glass rounded-3xl p-8 w-full max-w-lg mx-4">
+        <h2 class="text-2xl font-bold mb-6" id="modalTitle">Add New Hotel</h2>
+        <form id="hotelForm" class="space-y-5">
+            <input type="hidden" id="hotelId">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" id="name" placeholder="Hotel Name" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+                <input type="text" id="location" placeholder="Location" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+            </div>
+            <input type="text" id="address" placeholder="Full Address" class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+
+            <div class="grid grid-cols-3 gap-4">
+                <input type="number" step="0.1" id="rating" placeholder="Rating" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+                <input type="number" id="pricePerNight" placeholder="Price/Night" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+                <input type="number" id="availableRooms" placeholder="Available" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3">
+            </div>
+
+            <textarea id="description" placeholder="Description" rows="3"
+                      class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3"></textarea>
+
+            <div class="flex gap-4">
+                <button type="button" onclick="hideModal()"
+                        class="flex-1 py-4 rounded-2xl border border-zinc-700 hover:bg-zinc-900">Cancel</button>
+                <button type="submit"
+                        class="flex-1 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-sky-500 font-semibold">Save Hotel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Sample data (connect to your Spring Boot API later)
+    let hotels = [
+      { id: 1, name: "The Royal Horizon", location: "Maldives", rating: 4.9, pricePerNight: 450, availableRooms: 12, address: "Atoll View" },
+      { id: 2, name: "Everest Grand", location: "Nepal", rating: 4.7, pricePerNight: 280, availableRooms: 8, address: "Himalayan Base" }
+    ];
+
+    function renderHotels() {
+      const container = document.getElementById('hotelGrid');
+      container.innerHTML = hotels.map(h => `
+        <div class="glass rounded-3xl overflow-hidden card-hover">
+          <div class="h-48 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+            <i class="fas fa-hotel text-6xl text-zinc-600"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between">
+              <h3 class="text-xl font-semibold">${h.name}</h3>
+              <span class="text-amber-400">★ ${h.rating}</span>
+            </div>
+            <p class="text-zinc-400 text-sm mt-1">${h.location}</p>
+            <p class="text-2xl font-bold mt-4">$${h.pricePerNight} <span class="text-sm font-normal text-zinc-500">/night</span></p>
+
+            <div class="flex gap-3 mt-6">
+              <button onclick="editHotel(${h.id})"
+                      class="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium">Edit</button>
+              <button onclick="deleteHotel(${h.id})"
+                      class="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-2xl text-sm font-medium">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Modal functions
+    function showAddModal() {
+      document.getElementById('modalTitle').textContent = "Add New Hotel";
+      document.getElementById('hotelForm').reset();
+      document.getElementById('hotelId').value = '';
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function hideModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function editHotel(id) {
+      const hotel = hotels.find(h => h.id === id);
+      if (!hotel) return;
+      document.getElementById('modalTitle').textContent = "Edit Hotel";
+      document.getElementById('hotelId').value = hotel.id;
+      document.getElementById('name').value = hotel.name;
+      document.getElementById('location').value = hotel.location;
+      document.getElementById('address').value = hotel.address;
+      document.getElementById('rating').value = hotel.rating;
+      document.getElementById('pricePerNight').value = hotel.pricePerNight;
+      document.getElementById('availableRooms').value = hotel.availableRooms;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    // Form submit
+    document.getElementById('hotelForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Here you will call your Spring Boot API (saveHotel or updateHotel)
+      alert("Hotel saved! (Connect to your HotelServices API)");
+      hideModal();
+      renderHotels();
+    });
+
+    // Initial render
+    renderHotels();
+</script>
+</body>
+</html>
