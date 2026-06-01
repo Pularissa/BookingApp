@@ -2,33 +2,30 @@ package com.app.bookingapp.controller;
 
 import com.app.bookingapp.models.Hotel;
 import com.app.bookingapp.services.HotelServices;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/hotels")
+@CrossOrigin(origins = "http://localhost:5173")
 public class HotelController {
 
-    @Autowired
-    private HotelServices service;
+    private final HotelServices service;
+
+    public HotelController(
+            HotelServices service
+    ) {
+        this.service = service;
+    }
 
     @PostMapping("/admin/add")
-    public Hotel addHotel(@RequestBody Hotel hotel) {
+    public Hotel addHotel(
+            @RequestBody Hotel hotel
+    ) {
         return service.saveHotel(hotel);
-    }
-
-    @PutMapping("/admin/update/{id}")
-    public Hotel updateHotel(@PathVariable Long id, @RequestBody Hotel hotel) {
-        return service.updateHotel(id, hotel);
-    }
-
-    @DeleteMapping("/admin/delete/{id}")
-    public String deleteHotel(@PathVariable Long id) {
-        service.deleteHotel(id);
-        return "Hotel Deleted";
     }
 
     @GetMapping
@@ -36,37 +33,121 @@ public class HotelController {
         return service.getAllHotels();
     }
 
+    @GetMapping("/{id}")
+    public Hotel getHotel(
+            @PathVariable Long id
+    ) {
+        return service.getHotelById(id);
+    }
+
+    @PutMapping("/admin/update/{id}")
+    public Hotel updateHotel(
+            @PathVariable Long id,
+            @RequestBody Hotel hotel
+    ) {
+        return service.updateHotel(
+                id,
+                hotel
+        );
+    }
+
+    @DeleteMapping("/admin/delete/{id}")
+    public String deleteHotel(
+            @PathVariable Long id
+    ) {
+        service.deleteHotel(id);
+        return "Hotel Deleted";
+    }
+
+    @GetMapping("/location/{location}")
+    public List<Hotel> getLocation(
+            @PathVariable String location
+    ) {
+        return service.getHotelsByLocation(
+                location
+        );
+    }
+
+    @GetMapping("/rating/{rating}")
+    public List<Hotel> getRating(
+            @PathVariable double rating
+    ) {
+        return service.getHotelsByRating(
+                rating
+        );
+    }
+
+    @GetMapping("/price/{price}")
+    public List<Hotel> getPrice(
+            @PathVariable double price
+    ) {
+        return service.getHotelsByPrice(
+                price
+        );
+    }
+
     @GetMapping("/pagination/{page}/{size}")
-    public Page<Hotel> getHotelsWithPagination(@PathVariable int page, @PathVariable int size) {
-        return service.getHotelsWithPagination(page, size);
+    public Page<Hotel> pagination(
+            @PathVariable int page,
+            @PathVariable int size
+    ) {
+        return service.getHotelsWithPagination(
+                page,
+                size
+        );
     }
 
     @GetMapping("/sorting/{field}")
-    public List<Hotel> getHotelsWithSorting(@PathVariable String field) {
-        return service.getHotelsWithSorting(field);
+    public List<Hotel> sorting(
+            @PathVariable String field
+    ) {
+        return service.getHotelsWithSorting(
+                field
+        );
     }
 
-    @GetMapping("/paginationAndSorting/{page}/{size}/{field}")
-    public Page<Hotel> getHotelsWithPaginationAndSorting(
+    @GetMapping(
+            "/paginationAndSorting/{page}/{size}/{field}"
+    )
+    public Page<Hotel> paginationAndSorting(
             @PathVariable int page,
             @PathVariable int size,
             @PathVariable String field
     ) {
-        return service.getHotelsWithPaginationAndSorting(page, size, field);
+
+        return service
+                .getHotelsWithPaginationAndSorting(
+                        page,
+                        size,
+                        field
+                );
     }
 
-    @GetMapping("/location/{location}")
-    public List<Hotel> getByLocation(@PathVariable String location) {
-        return service.getHotelsByLocation(location);
+    @PutMapping("/update-price/{id}/{price}")
+    public String updatePrice(
+            @PathVariable Long id,
+            @PathVariable double price
+    ) {
+
+        service.updatePrice(
+                id,
+                price
+        );
+
+        return "Price Updated";
     }
 
-    @GetMapping("/rating/{rating}")
-    public List<Hotel> getByRating(@PathVariable double rating) {
-        return service.getHotelsByRating(rating);
-    }
+    @PutMapping("/update-rating/{id}/{rating}")
+    public String updateRating(
+            @PathVariable Long id,
+            @PathVariable double rating
+    ) {
 
-    @GetMapping("/price/{price}")
-    public List<Hotel> getByPrice(@PathVariable double price) {
-        return service.getHotelsByPrice(price);
+        service.updateRating(
+                id,
+                rating
+        );
+
+        return "Rating Updated";
     }
 }
