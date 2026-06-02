@@ -1,6 +1,7 @@
 package com.app.bookingapp.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,27 +27,26 @@ public class JwtUtil {
     public String generateToken(String username) {
 
         return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(
                         new Date(
-                                System.currentTimeMillis()
-                                        + expiration
+                                System.currentTimeMillis() + expiration
                         )
                 )
                 .signWith(getKey())
                 .compact();
     }
 
-    public String extractUsername(
-            String token) {
+    public String extractUsername(String token) {
 
-        return Jwts.parser()
-                .verifyWith(getKey())
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getKey())
                 .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 
     public boolean validateToken(

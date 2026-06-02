@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BookingAppApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BookingAppApplication.class, args);
+        SpringApplication.run(
+                BookingAppApplication.class,
+                args
+        );
     }
 }
