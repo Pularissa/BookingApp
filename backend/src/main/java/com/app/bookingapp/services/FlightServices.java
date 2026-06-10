@@ -20,20 +20,9 @@ public class FlightServices {
         return flightRepository.findAll();
     }
 
-    public void createFlight(
-             String airline,
-             String flightNumber,
-             String departureAirport,
-             String arrivalAirport,
-             LocalDateTime departureTime,
-             LocalDateTime arrivalTime,
-             String duration,
-             Double price,
-             int availableSeats,
-             int totalSeats,
-             String status,
-             String seatType
-    ) {
+    public void createFlight(String airline, String flightNumber, String departureAirport, String arrivalAirport,
+                             LocalDateTime departureTime, LocalDateTime arrivalTime, String duration, Double price,
+                             int availableSeats, int totalSeats, String status, String seatType) {
         Flight flight = new Flight();
         flight.setAirline(airline);
         flight.setFlightNumber(flightNumber);
@@ -50,20 +39,12 @@ public class FlightServices {
         flightRepository.save(flight);
     }
 
-    public void updateFlight(Long id,
-                             String airline,
-                             String flightNumber,
-                             String departureAirport,
-                             String arrivalAirport,
-                             LocalDateTime departureTime,
-                             LocalDateTime arrivalTime,
-                             String duration,
-                             Double price,
-                             int availableSeats,
-                             int totalSeats,
-                             String status,
-                             String seatType) {
-        Flight flight = flightRepository.findById(id).orElseThrow();
+    public void updateFlight(Long id, String airline, String flightNumber, String departureAirport, String arrivalAirport,
+                             LocalDateTime departureTime, LocalDateTime arrivalTime, String duration, Double price,
+                             int availableSeats, int totalSeats, String status, String seatType) {
+        Flight flight = flightRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Flight not found with id: " + id));
+        
         flight.setAirline(airline);
         flight.setFlightNumber(flightNumber);
         flight.setDepartureAirport(departureAirport);
@@ -76,12 +57,14 @@ public class FlightServices {
         flight.setTotalSeats(totalSeats);
         flight.setStatus(status);
         flight.setSeatType(seatType);
+        
         flightRepository.save(flight);
     }
 
     public void deleteFlight(Long id) {
+        if (!flightRepository.existsById(id)) {
+            throw new RuntimeException("Flight not found with id: " + id);
+        }
         flightRepository.deleteById(id);
     }
-
-
 }

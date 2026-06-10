@@ -1,8 +1,18 @@
-import axios from "axios";
+import API from './api';
 
-const API = "http://localhost:8080/flights";
-
-export const getFlights = async () => {
-  const response = await axios.get(API);
-  return response.data;
+export const flightService = {
+  getAllFlights: async () => {
+    const response = await API.get('/flights/flights');
+    return response.data;
+  },
+  createFlight: async (formData) => {
+    const response = await API.post('/flights', formData, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    return response.data;
+  },
+  deleteFlight: async (id) => {
+    const response = await API.get(`/flights/delete/${id}`);
+    return response.data;
+  }
 };

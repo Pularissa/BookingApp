@@ -1,132 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,500;1,500&display=swap');
-
-.hotel-container {
-    max-width: 1000px;
-    margin: 60px auto;
-    padding: 40px;
-    background-color: #F9F7F2; /* Soft Linen */
-    font-family: 'Inter', sans-serif;
-    color: #4A4A4A;
+.hotel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
-h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 500;
-    font-style: italic;
-    color: #5E503F; /* Deep Taupe */
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 40px;
-    letter-spacing: -0.5px;
+.hotel-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--bg-accent);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
 }
 
-/* Controls - Minimalist Style */
-.controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #EAE7E1;
+.hotel-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-color);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-.control-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+.hotel-image-wrapper {
+  position: relative;
+  height: 200px;
+  width: 100%;
 }
 
-.controls label {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #8E8376;
+.hotel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.controls input, .controls select {
-    background: transparent;
-    border: 1px solid #D1CDC4;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-family: 'Inter', sans-serif;
-    color: #5E503F;
+.hotel-rating-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--accent-color);
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
 }
 
-/* Table - Elegant & Spacious */
-.hotel-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #FFFFFF;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-    border-radius: 8px;
-}
-
-.hotel-table th {
-    text-align: left;
-    padding: 20px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: #8E8376;
-    border-bottom: 1px solid #F9F7F2;
-}
-
-.hotel-table td {
-    padding: 20px;
-    border-bottom: 1px solid #F9F7F2;
-    transition: all 0.3s ease;
-}
-
-.hotel-table tr:hover td {
-    background-color: #FAF9F6;
-    color: #2C2C2C;
+.hotel-info {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .hotel-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: #5E503F;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
 }
 
-.price-tag {
-    font-weight: 400;
-    color: #8E8376;
+.hotel-loc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
 }
 
-/* Pagination - Sophisticated buttons */
-.pagination {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
+.hotel-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--bg-accent);
 }
 
-.pagination-btn {
-    background: none;
-    border: 1px solid #5E503F;
-    color: #5E503F;
-    padding: 10px 24px;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+.hotel-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-.pagination-btn:hover:not(:disabled) {
-    background-color: #5E503F;
-    color: #F9F7F2;
+.hotel-price span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
-.pagination-btn:disabled {
-    border-color: #D1CDC4;
-    color: #D1CDC4;
-    cursor: not-allowed;
+.book-btn {
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-.page-info {
-    font-style: italic;
-    font-family: 'Playfair Display', serif;
-    color: #8E8376;
+.book-btn:hover {
+  background-color: var(--accent-hover);
 }

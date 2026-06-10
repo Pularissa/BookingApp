@@ -1,37 +1,20 @@
-import axios from "axios";
+import API from './api';
 
-const API = "http://localhost:8080/hotels";
-
-export const getHotels = async () => {
-  const response = await axios.get(API);
-  return response.data;
-};
-
-export const addHotel = async (hotel) => {
-  const token = localStorage.getItem("token");
-
-  const response = await axios.post(
-    `${API}/admin/add`,
-    hotel,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  return response.data;
-};
-
-export const deleteHotel = async (id) => {
-  const token = localStorage.getItem("token");
-
-  return axios.delete(
-    `${API}/admin/delete/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export const hotelService = {
+  getAllHotels: async () => {
+    const response = await API.get('/hotels');
+    return response.data;
+  },
+  addHotel: async (hotelData) => {
+    const response = await API.post('/hotels/admin/add', hotelData);
+    return response.data;
+  },
+  updateHotel: async (id, hotelData) => {
+    const response = await API.put(`/hotels/admin/update/${id}`, hotelData);
+    return response.data;
+  },
+  deleteHotel: async (id) => {
+    const response = await API.delete(`/hotels/admin/delete/${id}`);
+    return response.data;
+  }
 };

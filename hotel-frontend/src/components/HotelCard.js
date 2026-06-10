@@ -1,17 +1,33 @@
-function HotelCard({ hotel }) {
+import React from 'react';
+
+const HotelCard = ({ hotel, onBook }) => {
+  // Graceful visual fallback using curated high-end architecture assets
+  const fallbackImage = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80";
+
   return (
     <div className="hotel-card">
-      <h3>{hotel.name}</h3>
-
-      <p>{hotel.location}</p>
-
-      <p>⭐ {hotel.rating}</p>
-
-      <p>${hotel.pricePerNight}</p>
-
-      <p>{hotel.description}</p>
+      <div className="hotel-image-wrapper">
+        <img 
+          src={hotel.imageUrl || fallbackImage} 
+          alt={hotel.name} 
+          className="hotel-img"
+        />
+        <div className="hotel-rating-badge">★ {hotel.rating.toFixed(1)}</div>
+      </div>
+      <div className="hotel-info">
+        <h3 className="hotel-name">{hotel.name}</h3>
+        <p className="hotel-loc">{hotel.location} • {hotel.address}</p>
+        <div className="hotel-footer">
+          <div className="hotel-price">
+            ${hotel.pricePerNight} <span>/ night</span>
+          </div>
+          <button className="book-btn" onClick={() => onBook(hotel)}>
+            Book Space
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default HotelCard;

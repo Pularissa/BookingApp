@@ -1,11 +1,23 @@
-import axios from "axios";
+import API from './api';
 
-const API = "http://localhost:8080/auth";
-
-export const login = async (user) => {
-  const response = await axios.post(`${API}/login`, user);
-
-  localStorage.setItem("token", response.data);
-
-  return response.data;
+export const authService = {
+  login: async (credentials) => {
+    const response = await API.post('/auth/login', credentials);
+    if (response.data && response.data !== "Invalid Credentials") {
+      localStorage.setItem('token', response.data);
+      localStorage.setItem('username', credentials.username);
+      return true;
+    }
+    return false;
+  },
+  register: async (userData) => {
+    const response = await API.post('/auth/register', userData);
+    return response.data;
+  },
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+  },
+  getCurrentUser: () => localStorage.getItem('username'),
+  isAuthenticated: () => !!localStorage.getItem('token')
 };

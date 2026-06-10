@@ -1,7 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body{
-  @apply bg-slate-100;
+/* Essential overrides to prevent default root element spacing structural cracks */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background-color: #0f172a;
 }
