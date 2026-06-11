@@ -1,9 +1,9 @@
 import React from 'react';
 import HotelCard from './HotelCard';
-import './HotelList.css';
 
-const HotelList = ({ hotels, onBookHotel }) => {
-  if (!hotels || hotels.length === 0) {
+
+const HotelList = ({ hotel, onBookHotel }) => {
+  if (!hotel || hotel.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
         No accommodations match your selection criteria.
@@ -13,7 +13,7 @@ const HotelList = ({ hotels, onBookHotel }) => {
 
   return (
     <div className="hotel-grid">
-      {hotels.map((hotel) => (
+      {hotel.map((hotel) => (
         <HotelCard key={hotel.id} hotel={hotel} onBook={onBookHotel} />
       ))}
     </div>

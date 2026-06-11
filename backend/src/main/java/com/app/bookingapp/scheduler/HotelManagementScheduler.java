@@ -2,7 +2,6 @@ package com.app.bookingapp.scheduler;
 
 import com.app.bookingapp.models.Hotel;
 import com.app.bookingapp.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,46 +17,102 @@ public class HotelManagementScheduler {
 
     private static final String DATA_DIR = "./hotel_data/";
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
 
-    public HotelManagementScheduler() {
+    public HotelManagementScheduler(HotelRepository hotelRepository) {
+        this.hotelRepository = hotelRepository;
+
         File directory = new File(DATA_DIR);
         if (!directory.exists()) {
             directory.mkdirs();
         }
     }
 
-    // Task 1: Generate occupancy breakdown metrics to a text file every 60 seconds
-    @Scheduled(fixedRate = 60000)
+    /**
+     * Generates occupancy reports dynamically based on the interval
+     * configured in application.properties
+     */
+    @Scheduled(fixedRateString = "${hotel.scheduler.report-rate}")
     public void generateLiveOccupancyReport() {
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String fileName = DATA_DIR + "occupancy_report_" + timestamp + ".txt";
 
-        List<Hotel> hotels = hotelRepository.findAll();
-        int totalAvailableRooms = hotels.stream().mapToInt(Hotel::getAvailableRooms).sum();
-        int totalRoomsCombined = hotels.stream().mapToInt(Hotel::getTotalRooms).sum();
+        String timestamp =
+                new SimpleDateFormat("yyyyMMdd_HHmmss")
+                        .format(new Date());
+
+        String fileName =
+                DATA_DIR + "occupancy_report_" + timestamp + ".txt";
+
+        List<Hotel> hotel = hotelRepository.findAll();
+
+        int totalAvailableRooms =
+                hotel.stream()
+                        .mapToInt(Hotel::getAvailableRooms)
+                        .sum();
+
+        int totalRoomsCombined =
+                hotel.stream()
+                        .mapToInt(Hotel::getTotalRooms)
+                        .sum();
 
         try (FileWriter writer = new FileWriter(fileName)) {
+
             writer.write("=== LIVE HOTEL OCCUPANCY REPORT ===\n");
             writer.write("Generated at: " + new Date() + "\n\n");
-            writer.write("Total Active Hotels System Wide: " + hotels.size() + "\n");
-            writer.write("Total Vacancies: " + totalAvailableRooms + " Out of " + totalRoomsCombined + "\n");
-            System.out.println("[SCHEDULER SUCCESS] Real-time file summary written: " + fileName);
+
+            writer.write("Total Hotels: "
+                    + hotel.size() + "\n");
+
+            writer.write("Available Rooms: "
+                    + totalAvailableRooms
+                    + " / "
+                    + totalRoomsCombined
+                    + "\n");
+
+            System.out.println(
+                    "[SCHEDULER] Occupancy report generated: "
+                            + fileName
+            );
+
         } catch (IOException e) {
-            System.err.println("[SCHEDULER ERROR] Could not save auto-generated report: " + e.getMessage());
+
+            System.err.println(
+                    "[SCHEDULER ERROR] "
+                            + e.getMessage()
+            );
         }
     }
 
-    // Task 2: Append diagnostic metrics to a rolling .log file 5 mins after boot, then every 5 mins
-    @Scheduled(fixedDelay = 300000, initialDelay = 300000)
+    /**
+     * Creates periodic backup logs using values
+     * from application.properties
+     */
+    @Scheduled(
+            fixedDelayString = "${hotel.scheduler.backup-delay}",
+            initialDelayString = "${hotel.scheduler.backup-initial-delay}"
+    )
     public void backupSystemLogs() {
-        String fileName = DATA_DIR + "system_backup.log";
-        try (FileWriter writer = new FileWriter(fileName, true)) {
-            writer.write("[" + new Date() + "] Automated log cluster check: DB Connection healthy.\n");
-            System.out.println("[SCHEDULER SUCCESS] File backup log entry updated.");
+
+        String fileName =
+                DATA_DIR + "system_backup.log";
+
+        try (FileWriter writer =
+                     new FileWriter(fileName, true)) {
+
+            writer.write(
+                    "[" + new Date() + "] "
+                            + "Database status: OK\n"
+            );
+
+            System.out.println(
+                    "[SCHEDULER] Backup log updated."
+            );
+
         } catch (IOException e) {
-            System.err.println("[SCHEDULER ERROR] File write failure on backup sequence.");
+
+            System.err.println(
+                    "[SCHEDULER ERROR] "
+                            + e.getMessage()
+            );
         }
     }
 }

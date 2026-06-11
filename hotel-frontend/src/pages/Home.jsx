@@ -1,33 +1,96 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../Styles/global.css';
 const Home = () => {
-  return (
-    <div style={{
-      backgroundImage: 'linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url("https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=1920&q=80")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      minHeight: 'calc(100vh - 70px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      padding: '0 1rem'
-    }}>
-      <div>
-        <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-1px' }}>
-          Travel Anywhere. <span style={{ color: 'var(--accent-color)' }}>Seamless Booking.</span>
-        </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
-          Instantly schedule flights and reserve global dynamic corporate spaces through our integrated engine.
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <Link to="/hotels" className="book-btn" style={{ padding: '0.8rem 2rem', fontSize: '1rem' }}>Browse Spaces</Link>
-          <Link to="/flights" className="book-btn" style={{ padding: '0.8rem 2rem', fontSize: '1rem', background: 'transparent', border: '1px solid var(--text-main)', color: 'var(--text-main)' }}>Find Flights</Link>
-        </div>
-      </div>
-    </div>
-  );
+    const navigate = useNavigate();
+
+    const [flightRef, setFlightRef] = useState('');
+    const [destination, setDestination] = useState('');
+
+    const handleSearchMatch = (e) => {
+        e.preventDefault();
+
+        navigate(
+            `/hotel?destination=${encodeURIComponent(
+                destination
+            )}&flightRef=${encodeURIComponent(flightRef)}`
+        );
+    };
+
+    return (
+        <section className="home-hero">
+            <div className="hero-content">
+
+                <h1 className="hero-title">
+                    Flight Locked In?
+                    <br />
+
+                    <span className="hero-highlight">
+                        Secure Your Ground Base Next.
+                    </span>
+
+                </h1>
+
+                <p className="hero-description">
+                    Enter your transit details to discover luxury hotels
+                    matching your destination and arrival schedule.
+                </p>
+
+                <form
+                    onSubmit={handleSearchMatch}
+                    className="search-form"
+                >
+
+                    <div className="form-group">
+
+                        <label>
+                            FLIGHT / TICKET REFERENCE
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="e.g., WB-204"
+                            required
+                            className="form-input"
+                            value={flightRef}
+                            onChange={(e) =>
+                                setFlightRef(e.target.value)
+                            }
+                        />
+
+                    </div>
+
+                    <div className="form-group">
+
+                        <label>
+                            ARRIVAL LOCATION
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="e.g., Kigali"
+                            required
+                            className="form-input"
+                            value={destination}
+                            onChange={(e) =>
+                                setDestination(e.target.value)
+                            }
+                        />
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="book-btn search-btn"
+                    >
+                        Match Accommodations
+                    </button>
+
+                </form>
+
+            </div>
+        </section>
+    );
 };
 
 export default Home;

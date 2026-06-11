@@ -6,6 +6,7 @@ import Flights from "./pages/Flights";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AdminHotels from "./pages/AdminHotels";
+import AdminFlights from "./pages/AdminFlights";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/hotels",
     element: <AdminHotels />,
+  },
+  {
+    path: "/admin/flights",
+    element: <AdminFlights />,
   },
 ]);
 

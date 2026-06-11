@@ -28,7 +28,7 @@ public interface HotelRepository
 
     @Query(
             value = """
-            SELECT * FROM hotels
+            SELECT * FROM hotel
             WHERE rating >= :rating
             """,
             nativeQuery = true
@@ -105,14 +105,17 @@ public interface HotelRepository
     @Modifying
     @Query(
             value = """
-                    UPDATE hotels
+                    UPDATE hotel
                     SET rating=:rating
                     WHERE id=:id
                     """,
             nativeQuery = true
+
+
     )
     int updateRating(
             @Param("id") Long id,
             @Param("rating") double rating
     );
+    
 }

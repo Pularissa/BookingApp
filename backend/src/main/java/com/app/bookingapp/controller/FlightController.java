@@ -1,83 +1,95 @@
 package com.app.bookingapp.controller;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.app.bookingapp.models.Flight;
 import com.app.bookingapp.services.FlightServices;
 
-@Controller
-@RequestMapping("/flights")
+@RestController
+@RequestMapping("/api/flights")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class FlightController {
+
     private final FlightServices flightServices;
+
     public FlightController(FlightServices flightServices) {
         this.flightServices = flightServices;
     }
 
-    @GetMapping("/flights")
-    public String getFlights(Model model) {
-        List<Flight> flights = flightServices.getAllFlights();
-        model.addAttribute("flights", flights);
-        return "flights";
+    // 🚀 UPDATED: GET ALL FLIGHTS WITH PAGINATION SUPPORT
+    @GetMapping
+    public ResponseEntity<Page<Flight>> getFlights(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(flightServices.getAllFlights(pageable));
     }
 
+    // ✅ CREATE FLIGHT (ADMIN ONLY via SecurityConfig)
     @PostMapping
-    public String createFlight(@RequestParam String airline,
-                               @RequestParam String flightNumber,
-                               @RequestParam String departureAirport,
-                               @RequestParam String arrivalAirport,
-                               @RequestParam String departureTime,   // as String
-                               @RequestParam String arrivalTime,     // as String
-                               @RequestParam String duration,
-                               @RequestParam Double price,
-                               @RequestParam int availableSeats,
-                               @RequestParam int totalSeats,
-                               @RequestParam String status,
-                               @RequestParam String seatType
-    ){
+    public ResponseEntity<Map<String, String>> createFlight(@RequestBody Flight flight) {
         flightServices.createFlight(
-                airline, flightNumber, departureAirport, arrivalAirport,
-                LocalDateTime.parse(departureTime),   // parse manually
-                LocalDateTime.parse(arrivalTime),
-                duration, price, availableSeats, totalSeats, status, seatType);
-        return "redirect:/flights";
+                flight.getAirline(),
+                flight.getFlightNumber(),
+                flight.getDepartureAirport(),
+                flight.getArrivalAirport(),
+                flight.getDepartureTime(),
+                flight.getArrivalTime(),
+                flight.getDuration(),
+                flight.getPrice(),
+                flight.getAvailableSeats(),
+                flight.getTotalSeats(),
+                flight.getStatus(),
+                flight.getSeatType()
+        );
+
+        return new ResponseEntity<>(
+                Map.of("message", "Flight successfully registered."),
+                HttpStatus.CREATED
+        );
     }
 
-    @PostMapping("/update")
-    public String updateFlight(@RequestParam Long id,
-                               @RequestParam String airline,
-                               @RequestParam String flightNumber,
-                               @RequestParam String departureAirport,
-                               @RequestParam String arrivalAirport,
-                               @RequestParam String departureTime,
-                               @RequestParam String arrivalTime,
-                               @RequestParam String duration,
-                               @RequestParam Double price,
-                               @RequestParam int availableSeats,
-                               @RequestParam int totalSeats,
-                               @RequestParam String status,
-                               @RequestParam String seatType
+    // ✅ UPDATE FLIGHT (ADMIN ONLY)
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateFlight(
+            @PathVariable Long id,
+            @RequestBody Flight flight
     ) {
         flightServices.updateFlight(
-                id, airline, flightNumber, departureAirport, arrivalAirport,
-                LocalDateTime.parse(departureTime),
-                LocalDateTime.parse(arrivalTime),
-                duration, price, availableSeats, totalSeats, status, seatType
+                id,
+                flight.getAirline(),
+                flight.getFlightNumber(),
+                flight.getDepartureAirport(),
+                flight.getArrivalAirport(),
+                flight.getDepartureTime(),
+                flight.getArrivalTime(),
+                flight.getDuration(),
+                flight.getPrice(),
+                flight.getAvailableSeats(),
+                flight.getTotalSeats(),
+                flight.getStatus(),
+                flight.getSeatType()
         );
-        return "redirect:/flights";
+
+        return ResponseEntity.ok(
+                Map.of("message", "Flight updated successfully.")
+        );
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteFlight(@PathVariable Long id) {
+    // ✅ DELETE FLIGHT (ADMIN ONLY)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteFlight(@PathVariable Long id) {
         flightServices.deleteFlight(id);
-        return "redirect:/flights";
+        return ResponseEntity.ok(
+                Map.of("message", "Flight deleted successfully.")
+        );
     }
 }

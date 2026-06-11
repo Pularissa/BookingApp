@@ -1,4 +1,5 @@
 import React from 'react';
+import '../Styles/global.css'; // Global styles for consistent theming
 
 const HotelCard = ({ hotel, onBook }) => {
   // Graceful visual fallback using curated high-end architecture assets

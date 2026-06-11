@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class FlightServices {
@@ -16,8 +18,8 @@ public class FlightServices {
         this.flightRepository = flightRepository;
     }
 
-    public List<Flight> getAllFlights() {
-        return flightRepository.findAll();
+    public Page<Flight> getAllFlights(Pageable pageable) {
+        return flightRepository.findAll(pageable);
     }
 
     public void createFlight(String airline, String flightNumber, String departureAirport, String arrivalAirport,

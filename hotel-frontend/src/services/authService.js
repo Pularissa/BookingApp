@@ -1,23 +1,52 @@
-import API from './api';
+// Services/authService.js
 
 export const authService = {
-  login: async (credentials) => {
-    const response = await API.post('/auth/login', credentials);
-    if (response.data && response.data !== "Invalid Credentials") {
-      localStorage.setItem('token', response.data);
-      localStorage.setItem('username', credentials.username);
-      return true;
+  login: async (form) => {
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: form.username,
+          password: form.password
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Backend returns { token: "...", role: "..." }
+        if (data.token) {
+          localStorage.setItem("token", data.token);   // FIX: was data.jwtToken
+          localStorage.setItem("role", data.role);
+          localStorage.setItem("username", form.username);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("Connection Refused:", error);
+      return false;
     }
-    return false;
   },
-  register: async (userData) => {
-    const response = await API.post('/auth/register', userData);
-    return response.data;
-  },
+
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
   },
-  getCurrentUser: () => localStorage.getItem('username'),
-  isAuthenticated: () => !!localStorage.getItem('token')
+
+  isAuthenticated: () => {
+    return !!localStorage.getItem("token");
+  },
+
+  getCurrentUser: () => {
+    return localStorage.getItem("username");
+  },
+
+  getUserRole: () => {
+    return localStorage.getItem("role") || "USER";
+  }
 };

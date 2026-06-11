@@ -3,12 +3,17 @@ package com.app.bookingapp.controller;
 import com.app.bookingapp.models.AppUser;
 import com.app.bookingapp.repository.AppUserRepository;
 import com.app.bookingapp.security.JwtUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
+// Allows your React app on port 3000 to communicate with this API
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class AuthController {
 
     private final AppUserRepository repository;
@@ -25,47 +30,50 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping("/register")
-    public AppUser register(
-            @RequestBody AppUser user
-    ) {
+   @PostMapping("/register")
+    public AppUser register(@RequestBody AppUser user) {
 
-        user.setPassword(
-                encoder.encode(
-                        user.getPassword()
-                )
-        );
+        user.setPassword(encoder.encode(user.getPassword()));
 
-        if(user.getRole() == null) {
+        if (user.getRole() == null || user.getRole().isBlank()) {
             user.setRole("USER");
+        } else {
+            user.setRole(user.getRole().toUpperCase());
         }
 
         return repository.save(user);
     }
 
     @PostMapping("/login")
-    public String login(
-            @RequestBody AppUser request
-    ) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
 
-        AppUser user =
-                repository
-                        .findByUsername(
-                                request.getUsername()
-                        )
-                        .orElse(null);
+        String username = credentials.get("username");
+        String password = credentials.get("password");
 
-        if(user != null &&
-                encoder.matches(
-                        request.getPassword(),
-                        user.getPassword()
-                )) {
+        AppUser user = repository.findByUsername(username).orElse(null);
 
-            return jwtUtil.generateToken(
-                    user.getUsername()
-            );
+        if (user != null && encoder.matches(password, user.getPassword())) {
+
+            String role = user.getRole();
+
+            if (role == null || role.isBlank()) {
+                role = "USER";
+            }
+
+            role = role.toUpperCase();
+
+            String token = jwtUtil.generateToken(user.getUsername(), role);
+
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "role", role,
+                    "username", user.getUsername()
+            ));
         }
 
-        return "Invalid Credentials";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of(
+                        "error", "Invalid username or password"
+                ));
     }
 }
