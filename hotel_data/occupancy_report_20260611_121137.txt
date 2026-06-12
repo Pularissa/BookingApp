@@ -1,5 +1,0 @@
-=== LIVE HOTEL OCCUPANCY REPORT ===
-Generated at: Thu Jun 11 12:11:38 SAST 2026
-
-Total Active Hotels System Wide: 7
-Total Vacancies: 127 Out of 515

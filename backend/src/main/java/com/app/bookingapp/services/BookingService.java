@@ -1,16 +1,17 @@
 package com.app.bookingapp.services;
 
-import com.app.bookingapp.models.Booking;
-import com.app.bookingapp.models.Hotel;
-import com.app.bookingapp.repository.BookingRepository;
-import com.app.bookingapp.repository.HotelRepository;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.app.bookingapp.models.Booking;
+import com.app.bookingapp.models.Hotel;
+import com.app.bookingapp.repository.BookingRepository;
+import com.app.bookingapp.repository.HotelRepository;
 
 @Service
 public class BookingService {
@@ -32,6 +33,8 @@ public class BookingService {
         return bookingRepository.findAll(
                 PageRequest.of(page, size, Sort.by("id").descending()));
     }
+
+        
 
     // Create a booking — links to a hotel by ID, stores username from JWT
     public Booking createBooking(Map<String, Object> payload, String username) {

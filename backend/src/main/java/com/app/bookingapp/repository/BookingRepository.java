@@ -1,13 +1,14 @@
 package com.app.bookingapp.repository;
 
-import com.app.bookingapp.models.Booking;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.app.bookingapp.models.Booking;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -26,4 +27,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "SELECT b.* FROM booking b INNER JOIN hotel h ON b.hotel_id = h.id WHERE h.location = ?1", nativeQuery = true)
     List<Booking> findBookingsByLocationNative(String location);
+
+    
 }

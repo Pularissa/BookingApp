@@ -61,22 +61,18 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/hotel/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/hotel/**").hasRole("ADMIN")
 
-                // 📅 BOOKING RULES (Kept secure so users must log in to finalize spaces)
-                .requestMatchers(HttpMethod.GET, "/api/bookings/my-bookings").hasAnyRole("USER", "ADMIN")
+                /// ==========================================
+                // 📅 BOOKING SECURITY RULES
+                // ==========================================
+
+                // 1. Viewing Rules (Who can see what)
                 .requestMatchers(HttpMethod.GET, "/api/bookings/all").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/bookings").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/bookings/my-bookings").hasAnyRole("USER", "ADMIN")
 
-                            // 📅 BOOKING RULES
-            // 1. View all bookings (Strictly Admin only)
-            .requestMatchers(HttpMethod.GET, "/api/bookings/all").hasRole("ADMIN")
-
-            // 2. View personal bookings (Both Users and Admins can view their own lists)
-            .requestMatchers(HttpMethod.GET, "/api/bookings/my-bookings").hasAnyRole("USER", "ADMIN")
-
-            // 3. Modifying Bookings (Strictly USER only. Admins can ONLY view and are explicitly locked out from changes)
-            .requestMatchers(HttpMethod.POST, "/api/bookings").hasRole("USER")
-            .requestMatchers(HttpMethod.PUT, "/api/bookings/**").hasRole("USER")
-            .requestMatchers(HttpMethod.DELETE, "/api/bookings/**").hasRole("USER")
+                // 2. Modification Rules (Strictly USER only - Admins are locked out)
+                .requestMatchers(HttpMethod.POST, "/api/bookings").hasRole("USER")
+                .requestMatchers(HttpMethod.PUT, "/api/bookings/**").hasRole("USER")
+                .requestMatchers(HttpMethod.DELETE, "/api/bookings/**").hasRole("USER")
 
                 // 🔒 everything else requires login
                 .anyRequest().authenticated()

@@ -1,0 +1,5 @@
+=== LIVE HOTEL OCCUPANCY REPORT ===
+Generated at: Fri Jun 12 09:59:00 SAST 2026
+
+Total Hotels: 27
+Available Rooms: 894 / 2710
